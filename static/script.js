@@ -71,17 +71,17 @@ async function finishQuiz() {
     document.getElementById('eth-earned').textContent = 
         `You earned Ξ${result.earned_eth.toFixed(3)} ETH!`;
         
-    try {
+    if (result.leaderboard && Array.isArray(result.leaderboard)) {
         const leaderboardHtml = result.leaderboard
             .map((entry, index) => {
-                const wallet = entry.wallet || 'Unknown';
-                return `<p>${index + 1}. Wallet: ${wallet.slice(0, 8)}... - Score: ${entry.score}</p>`;
+                if (!entry || !entry.wallet) return '';
+                return `<p>${index + 1}. Wallet: ${entry.wallet.slice(0, 8)}... - Score: ${entry.score}</p>`;
             })
+            .filter(entry => entry) // Remove empty entries
             .join('');
         document.getElementById('leaderboard-entries').innerHTML = leaderboardHtml || 'No entries yet';
-    } catch (error) {
-        console.error('Error rendering leaderboard:', error);
-        document.getElementById('leaderboard-entries').innerHTML = 'Error loading leaderboard';
+    } else {
+        document.getElementById('leaderboard-entries').innerHTML = 'No entries yet';
     }
 }
 
