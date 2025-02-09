@@ -69,15 +69,15 @@ def finish_game(score: Score):
         leaderboard = []
     
     # Mint tokens
-    from token_agent import TokenAgent
-    agent = TokenAgent()
-    success, message = agent.mint_tokens(score.wallet, int(earned_tokens))
+    # from token_agent import TokenAgent
+    # agent = TokenAgent()
+    # success, message = agent.mint_tokens(score.wallet, int(earned_tokens))
     
     return {
         "earned_tokens": earned_tokens,
         "token_address": quiz.token_address,
         "leaderboard": leaderboard,
-        "mint_status": message
+        "mint_status": "test"
     }
 
 if __name__ == "__main__":
