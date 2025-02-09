@@ -43,13 +43,11 @@ def finish_game(score: Score):
     quiz.update_leaderboard(score.score)
     earned_eth = (score.score / len(game.QUIZ_QUESTIONS)) * quiz.reward_eth
     
-    leaderboard = db.get('leaderboard', [])
+    leaderboard = list(db.get('leaderboard', []))
+    leaderboard.sort(key=lambda x: x['score'], reverse=True)
     return {
         "earned_eth": earned_eth,
-        "leaderboard": [{
-            "wallet": entry['wallet'],
-            "score": entry['score']
-        } for entry in leaderboard]
+        "leaderboard": leaderboard
     }
 
 if __name__ == "__main__":

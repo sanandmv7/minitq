@@ -71,11 +71,18 @@ async function finishQuiz() {
     document.getElementById('eth-earned').textContent = 
         `You earned Ξ${result.earned_eth.toFixed(3)} ETH!`;
         
-    const leaderboardHtml = result.leaderboard.map((entry, index) => 
-        `<p>${index + 1}. Wallet: ${entry.wallet?.slice(0, 8) || 'Unknown'}... - Score: ${entry.score}</p>`
-    ).join('');
-    
-    document.getElementById('leaderboard-entries').innerHTML = leaderboardHtml;
+    try {
+        const leaderboardHtml = result.leaderboard
+            .map((entry, index) => {
+                const wallet = entry.wallet || 'Unknown';
+                return `<p>${index + 1}. Wallet: ${wallet.slice(0, 8)}... - Score: ${entry.score}</p>`;
+            })
+            .join('');
+        document.getElementById('leaderboard-entries').innerHTML = leaderboardHtml || 'No entries yet';
+    } catch (error) {
+        console.error('Error rendering leaderboard:', error);
+        document.getElementById('leaderboard-entries').innerHTML = 'Error loading leaderboard';
+    }
 }
 
 function resetQuiz() {
