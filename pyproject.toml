@@ -18,6 +18,8 @@ pandas = "^2.2.3"
 replit = "^4.1.0"
 cdp = "^0.0.2"
 langgraph-checkpoint = "^2.0.12"
+fastapi = "^0.115.8"
+uvicorn = "^0.34.0"
 
 [build-system]
 requires = ["poetry-core"]
