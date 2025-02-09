@@ -1,6 +1,6 @@
 
 from cdp_langchain.utils import CdpAgentkitWrapper
-from cdp import Wallet, hash_message
+from cdp import *
 from typing import Tuple
 import os
 
