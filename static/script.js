@@ -71,15 +71,14 @@ async function finishQuiz() {
     document.getElementById('eth-earned').textContent = 
         `You earned Ξ${result.earned_eth.toFixed(3)} ETH!`;
         
-    if (result.leaderboard && Array.isArray(result.leaderboard)) {
-        const leaderboardHtml = result.leaderboard
-            .map((entry, index) => {
-                if (!entry || !entry.wallet) return '';
-                return `<p>${index + 1}. Wallet: ${entry.wallet.slice(0, 8)}... - Score: ${entry.score}</p>`;
-            })
-            .filter(entry => entry) // Remove empty entries
+    const leaderboard = result.leaderboard || [];
+    if (leaderboard.length > 0) {
+        const leaderboardHtml = leaderboard
+            .map((entry, index) => 
+                `<p>${index + 1}. Wallet: ${entry.wallet.slice(0, 8)}... - Score: ${entry.score}</p>`
+            )
             .join('');
-        document.getElementById('leaderboard-entries').innerHTML = leaderboardHtml || 'No entries yet';
+        document.getElementById('leaderboard-entries').innerHTML = leaderboardHtml;
     } else {
         document.getElementById('leaderboard-entries').innerHTML = 'No entries yet';
     }
