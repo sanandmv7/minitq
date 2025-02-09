@@ -1,102 +1,134 @@
+
 #!/usr/bin/env python3
 import random
 import time
 from utils import clear_screen, format_eth
+from replit import db
+from typing import Dict, List
 
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 from cdp import *
 
 class TransferInput(BaseModel):
-    recipient_address: str = Field(...,         description="The recipient wallet address")
+    recipient_address: str = Field(..., description="The recipient wallet address")
     amount: str = Field(..., description="The amount to transfer")
 
-class NumberGuessingGame:
+QUIZ_QUESTIONS = [
+    {
+        "question": "What is Harry Potter's Patronus?",
+        "answer": "stag",
+        "options": ["stag", "doe", "wolf", "phoenix"]
+    },
+    {
+        "question": "What house is Harry Potter in at Hogwarts?",
+        "answer": "gryffindor",
+        "options": ["gryffindor", "slytherin", "ravenclaw", "hufflepuff"]
+    },
+    {
+        "question": "What is the core of Harry's wand?",
+        "answer": "phoenix feather",
+        "options": ["phoenix feather", "dragon heartstring", "unicorn hair", "basilisk fang"]
+    },
+    {
+        "question": "Who killed Dumbledore?",
+        "answer": "snape",
+        "options": ["snape", "malfoy", "voldemort", "bellatrix"]
+    },
+    {
+        "question": "What is the name of Harry's owl?",
+        "answer": "hedwig",
+        "options": ["hedwig", "errol", "fawkes", "pigwidgeon"]
+    }
+]
+
+class QuizGame:
     def __init__(self):
-        self.min_number = 0
-        self.max_number = 100
-        self.max_attempts = 10
-        self.reward_eth = 0.01  # Mock ETH reward for winning
-        self.total_rewards = 0
-        self.games_won = 0
-        self.games_played = 0
-
-    def initialize_agent():
-        llm = ChatOpenAI(model="gpt-4o-mini")
-
-    def transfer_usdc(wallet: Wallet, recipient_address: str, amount: str) -> str:
-        """Transfer USDC to specified address."""
-        try:
-            # Request USDC from faucet before transfer
-            faucet_tx = wallet.faucet(asset_id="usdc")
-            faucet_tx.wait()
-            print("Received USDC from faucet")
-
-            # Perform the transfer
-            transfer = wallet.transfer(float(amount), "usdc", recipient_address)
-            result = transfer.wait()
-            return f"Successfully transferred {amount} USDC to {recipient_address}"
-        except Exception as e:
-            return f"Failed to transfer USDC: {str(e)}"
-    
-    def generate_number(self):
-        return random.randint(self.min_number, self.max_number)
-
-    def get_valid_guess(self):
+        self.reward_eth = 0.01
+        self.questions = QUIZ_QUESTIONS
+        self.wallet_address = ""
+        
+    def get_wallet_address(self):
+        while True:
+            address = input("\nPlease enter your wallet address: ").strip()
+            if len(address) > 0:  # Basic validation
+                self.wallet_address = address
+                return
+                
+    def ask_question(self, q_data: Dict) -> bool:
+        print(f"\n{q_data['question']}")
+        for i, option in enumerate(q_data['options'], 1):
+            print(f"{i}. {option}")
+            
         while True:
             try:
-                guess = input(f"\nEnter your guess ({self.min_number}-{self.max_number}): ")
-                guess = int(guess)
-                if self.min_number <= guess <= self.max_number:
-                    return guess
-                print(f"Please enter a number between {self.min_number} and {self.max_number}")
+                choice = int(input("\nEnter your choice (1-4): "))
+                if 1 <= choice <= 4:
+                    return q_data['options'][choice-1].lower() == q_data['answer'].lower()
             except ValueError:
-                print("Please enter a valid number!")
+                pass
+            print("Please enter a valid number between 1 and 4")
 
-    def play_round(self):
-        clear_screen()
-        print("\n🎮 Welcome to the Crypto Number Guessing Game! 🎮")
-        print(f"Guess the number between {self.min_number} and {self.max_number}")
-        print(f"You have {self.max_attempts} attempts to win {format_eth(self.reward_eth)} ETH!")
-        
-        target_number = self.generate_number()
-        attempts = 0
-
-        while attempts < self.max_attempts:
-            attempts += 1
-            remaining = self.max_attempts - attempts
+    def update_leaderboard(self, score: int):
+        if 'leaderboard' not in db:
+            db['leaderboard'] = []
             
-            print(f"\nAttempts remaining: {remaining}")
-            guess = self.get_valid_guess()
-
-            if guess == target_number:
-                print("\n🎉 Congratulations! You've won! 🎉")
-                print(f"You earned {format_eth(self.reward_eth)} ETH!")
-                self.total_rewards += self.reward_eth
-                self.games_won += 1
+        leaderboard = db['leaderboard']
+        
+        # Update existing score or add new entry
+        entry_found = False
+        for entry in leaderboard:
+            if entry['wallet'] == self.wallet_address:
+                entry['score'] = max(entry['score'], score)
+                entry_found = True
                 break
-            elif guess < target_number:
-                print("Too low! Try a higher number.")
+                
+        if not entry_found:
+            leaderboard.append({
+                'wallet': self.wallet_address,
+                'score': score
+            })
+            
+        # Sort by score and keep top 10
+        leaderboard.sort(key=lambda x: x['score'], reverse=True)
+        db['leaderboard'] = leaderboard[:10]
+
+    def show_leaderboard(self):
+        if 'leaderboard' not in db:
+            print("\nNo scores yet!")
+            return
+            
+        print("\n🏆 LEADERBOARD 🏆")
+        print("-" * 50)
+        for i, entry in enumerate(db['leaderboard'], 1):
+            print(f"{i}. Wallet: {entry['wallet'][:8]}... - Score: {entry['score']}")
+        print("-" * 50)
+
+    def play_round(self) -> bool:
+        clear_screen()
+        print("\n🧙 Welcome to the Harry Potter Quiz! 🧙")
+        
+        if not self.wallet_address:
+            self.get_wallet_address()
+            
+        score = 0
+        for question in self.questions:
+            if self.ask_question(question):
+                score += 1
+                print("✨ Correct!")
             else:
-                print("Too high! Try a lower number.")
-
-            if remaining == 0:
-                print(f"\n😢 Game Over! The number was {target_number}")
-
-        self.games_played += 1
-        self.show_stats()
+                print("❌ Wrong!")
+                
+        print(f"\nYou got {score} out of {len(self.questions)} questions correct!")
+        earned_eth = (score / len(self.questions)) * self.reward_eth
+        print(f"You earned {format_eth(earned_eth)} ETH!")
+        
+        self.update_leaderboard(score)
+        self.show_leaderboard()
+        
         return self.play_again()
 
-    def show_stats(self):
-        print("\n📊 Game Statistics:")
-        print(f"Games Played: {self.games_played}")
-        print(f"Games Won: {self.games_won}")
-        print(f"Total Mock ETH Rewards: {format_eth(self.total_rewards)}")
-        if self.games_played > 0:
-            win_rate = (self.games_won / self.games_played) * 100
-            print(f"Win Rate: {win_rate:.1f}%")
-
-    def play_again(self):
+    def play_again(self) -> bool:
         while True:
             choice = input("\nWould you like to play again? (y/n): ").lower()
             if choice in ['y', 'n']:
@@ -104,21 +136,12 @@ class NumberGuessingGame:
             print("Please enter 'y' for yes or 'n' for no.")
 
 def main():
-    agent_executor = initialize_agent()
-    config = {
-        "configurable": {
-            "thread_id": "CDP Agentkit Chatbot Example!",
-            "checkpoint_ns": "default_namespace",
-            "checkpoint_id": "default_checkpoint"
-        }
-    }
-    
-    game = NumberGuessingGame()
+    game = QuizGame()
     while game.play_round():
         pass
     
-    print("\nThanks for playing! Final stats:")
-    game.show_stats()
+    print("\nThanks for playing! Final leaderboard:")
+    game.show_leaderboard()
 
 if __name__ == "__main__":
     main()
