@@ -44,7 +44,8 @@ QUIZ_QUESTIONS = [
 
 class QuizGame:
     def __init__(self):
-        self.reward_eth = 0.01
+        self.reward_multiplier = 10  # 10 MNTQ tokens per correct answer
+        self.token_address = "0xc90278252098de206ae85A4cb879123d50a05456"
         self.questions = QUIZ_QUESTIONS
         self.wallet_address = ""
         

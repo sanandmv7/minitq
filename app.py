@@ -41,7 +41,7 @@ def finish_game(score: Score):
     quiz = game.QuizGame()
     quiz.wallet_address = score.wallet
     quiz.update_leaderboard(score.score)
-    earned_eth = (score.score / len(game.QUIZ_QUESTIONS)) * quiz.reward_eth
+    earned_tokens = score.score * quiz.reward_multiplier
     
     try:
         leaderboard = list(db.get('leaderboard', []))
@@ -69,7 +69,8 @@ def finish_game(score: Score):
         leaderboard = []
     
     return {
-        "earned_eth": earned_eth,
+        "earned_tokens": earned_tokens,
+        "token_address": quiz.token_address,
         "leaderboard": leaderboard
     }
 

@@ -69,7 +69,7 @@ async function finishQuiz() {
     document.getElementById('score-text').textContent = 
         `You got ${score} out of ${questions.length} questions correct!`;
     document.getElementById('eth-earned').textContent = 
-        `You earned Ξ${result.earned_eth.toFixed(3)} ETH!`;
+        `You earned ${result.earned_tokens} MNTQ tokens! (${result.token_address})`;
         
     const leaderboardDiv = document.getElementById('leaderboard-entries');
     if (result.leaderboard && Array.isArray(result.leaderboard) && result.leaderboard.length > 0) {
