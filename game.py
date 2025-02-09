@@ -107,7 +107,7 @@ class QuizGame:
 
     def play_round(self) -> bool:
         clear_screen()
-        print("\n🧙 Welcome to the Harry Potter Quiz! 🧙")
+        print("\n🧙 Welcome to MinitQ - Harry Potter Edition! 🧙")
         
         if not self.wallet_address:
             self.get_wallet_address()
