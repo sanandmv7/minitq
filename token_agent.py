@@ -9,6 +9,7 @@ class TokenAgent:
         self.contract_address = "0xc90278252098de206ae85A4cb879123d50a05456"
         self.agentkit = CdpAgentkitWrapper()
         self.wallet = self.agentkit.get_wallet()
+        print(f"Agent Wallet Address: {self.wallet.get_address()}")
         
     def mint_tokens(self, player_address: str, amount: int) -> Tuple[bool, str]:
         try:
