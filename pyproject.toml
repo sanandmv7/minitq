@@ -7,8 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-cdp-langchain = "^0.0.6"
-cdp-agentkit-core = "^0.0.4"
+cdp-langchain = "0.0.6"
+cdp-agentkit-core = "0.0.4"
 langchain-core = "^0.3.15"
 langchain-openai = "^0.2.6"
 langgraph = "^0.2.45"
