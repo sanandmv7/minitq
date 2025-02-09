@@ -6,7 +6,7 @@ import os
 from utils import clear_screen, format_eth
 from replit import db
 from typing import Dict, List
-from cdp_sdk import Cdp
+from cdp import *
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
