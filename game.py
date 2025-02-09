@@ -2,9 +2,11 @@
 #!/usr/bin/env python3
 import random
 import time
+import os
 from utils import clear_screen, format_eth
 from replit import db
 from typing import Dict, List
+from cdp import Cdp
 
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
@@ -48,6 +50,15 @@ class QuizGame:
         self.token_address = "0xc90278252098de206ae85A4cb879123d50a05456"
         self.questions = QUIZ_QUESTIONS
         self.wallet_address = ""
+        
+        try:
+            # Configure CDP SDK
+            Cdp.configure(
+                api_key_name=os.getenv("CDP_API_KEY_NAME"),
+                api_key_private_key=os.getenv("CDP_API_KEY_PRIVATE_KEY")
+            )
+        except Exception as e:
+            print("Failed to configure CDP SDK:", str(e))
         
     def get_wallet_address(self):
         while True:
