@@ -68,10 +68,16 @@ def finish_game(score: Score):
         print(f"Error handling leaderboard: {e}")
         leaderboard = []
     
+    # Mint tokens
+    from token_agent import TokenAgent
+    agent = TokenAgent()
+    success, message = agent.mint_tokens(score.wallet, int(earned_tokens))
+    
     return {
         "earned_tokens": earned_tokens,
         "token_address": quiz.token_address,
-        "leaderboard": leaderboard
+        "leaderboard": leaderboard,
+        "mint_status": message
     }
 
 if __name__ == "__main__":

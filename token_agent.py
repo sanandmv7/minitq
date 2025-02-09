@@ -1,0 +1,39 @@
+
+from cdp_langchain.utils import CdpAgentkitWrapper
+from cdp import Wallet, hash_message
+from typing import Tuple
+import os
+
+class TokenAgent:
+    def __init__(self):
+        self.contract_address = "0xc90278252098de206ae85A4cb879123d50a05456"
+        self.agentkit = CdpAgentkitWrapper()
+        self.wallet = self.agentkit.get_wallet()
+        
+    def mint_tokens(self, player_address: str, amount: int) -> Tuple[bool, str]:
+        try:
+            # ABI for the mint function
+            mint_abi = [
+                {
+                    "inputs": [
+                        {"internalType": "address", "name": "to", "type": "address"},
+                        {"internalType": "uint256", "name": "amount", "type": "uint256"}
+                    ],
+                    "name": "mint",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ]
+            
+            # Invoke mint function
+            tx = self.wallet.invoke_contract(
+                contract_address=self.contract_address,
+                method="mint",
+                args={"to": player_address, "amount": amount},
+                abi=mint_abi
+            ).wait()
+            
+            return True, f"Successfully minted {amount} MINITQ tokens to {player_address}"
+        except Exception as e:
+            return False, f"Failed to mint tokens: {str(e)}"
