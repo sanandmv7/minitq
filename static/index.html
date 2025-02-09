@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Harry Potter Quiz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🧙 Harry Potter Quiz 🧙</h1>
+        
+        <div id="wallet-screen" class="screen">
+            <input type="text" id="wallet-input" placeholder="Enter your wallet address">
+            <button onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="quiz-screen" class="screen hidden">
+            <h2 id="question-text"></h2>
+            <div id="options"></div>
+        </div>
+
+        <div id="result-screen" class="screen hidden">
+            <h2>Quiz Complete!</h2>
+            <p id="score-text"></p>
+            <p id="eth-earned"></p>
+            <div id="leaderboard">
+                <h3>🏆 Leaderboard 🏆</h3>
+                <div id="leaderboard-entries"></div>
+            </div>
+            <button onclick="resetQuiz()">Play Again</button>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
