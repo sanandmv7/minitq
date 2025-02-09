@@ -1,4 +1,3 @@
-
 let currentQuestion = 0;
 let score = 0;
 let questions = [];
@@ -13,7 +12,7 @@ async function startQuiz() {
 
     const response = await fetch('/api/questions');
     questions = await response.json();
-    
+
     document.getElementById('wallet-screen').classList.add('hidden');
     document.getElementById('quiz-screen').classList.remove('hidden');
     showQuestion();
@@ -22,11 +21,11 @@ async function startQuiz() {
 function showQuestion() {
     const question = questions[currentQuestion];
     document.getElementById('question-text').textContent = question.question;
-    
+
     const optionsHtml = question.options.map((option, index) => 
         `<button onclick="submitAnswer(${index + 1})">${index + 1}. ${option}</button>`
     ).join('');
-    
+
     document.getElementById('options').innerHTML = optionsHtml;
 }
 
@@ -39,10 +38,10 @@ async function submitAnswer(choice) {
             answer: choice
         })
     });
-    
+
     const result = await response.json();
     if (result.correct) score++;
-    
+
     currentQuestion++;
     if (currentQuestion < questions.length) {
         showQuestion();
@@ -60,17 +59,17 @@ async function finishQuiz() {
             score: score
         })
     });
-    
+
     const result = await response.json();
-    
+
     document.getElementById('quiz-screen').classList.add('hidden');
     document.getElementById('result-screen').classList.remove('hidden');
-    
+
     document.getElementById('score-text').textContent = 
         `You got ${score} out of ${questions.length} questions correct!`;
     document.getElementById('eth-earned').textContent = 
-        `You earned ${result.earned_tokens} MNTQ tokens! (${result.token_address})`;
-        
+        `You earned ${result.earned_tokens} MNTQ tokens!`;
+
     const leaderboardDiv = document.getElementById('leaderboard-entries');
     if (result.leaderboard && Array.isArray(result.leaderboard) && result.leaderboard.length > 0) {
         const leaderboardHtml = result.leaderboard
@@ -88,7 +87,7 @@ function resetQuiz() {
     currentQuestion = 0;
     score = 0;
     walletAddress = '';
-    
+
     document.getElementById('result-screen').classList.add('hidden');
     document.getElementById('wallet-screen').classList.remove('hidden');
     document.getElementById('wallet-input').value = '';
