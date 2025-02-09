@@ -71,21 +71,16 @@ async function finishQuiz() {
     document.getElementById('eth-earned').textContent = 
         `You earned Ξ${result.earned_eth.toFixed(3)} ETH!`;
         
-    try {
-        const leaderboard = Array.isArray(result.leaderboard) ? result.leaderboard : [];
-        if (leaderboard.length > 0) {
-            const leaderboardHtml = leaderboard
-                .map((entry, index) => 
-                    `<p>${index + 1}. Wallet: ${entry.wallet.slice(0, 8)}... - Score: ${entry.score}</p>`
-                )
-                .join('');
-            document.getElementById('leaderboard-entries').innerHTML = leaderboardHtml;
-        } else {
-            document.getElementById('leaderboard-entries').innerHTML = 'Complete the quiz to see the leaderboard!';
-        }
-    } catch (error) {
-        console.error('Error updating leaderboard:', error);
-        document.getElementById('leaderboard-entries').innerHTML = 'Error loading leaderboard';
+    const leaderboardDiv = document.getElementById('leaderboard-entries');
+    if (result.leaderboard && Array.isArray(result.leaderboard) && result.leaderboard.length > 0) {
+        const leaderboardHtml = result.leaderboard
+            .map((entry, index) => 
+                `<p>${index + 1}. Wallet: ${entry.wallet.slice(0, 8)}... - Score: ${entry.score}</p>`
+            )
+            .join('');
+        leaderboardDiv.innerHTML = leaderboardHtml;
+    } else {
+        leaderboardDiv.innerHTML = 'No entries in leaderboard yet';
     }
 }
 

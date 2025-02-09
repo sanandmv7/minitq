@@ -43,19 +43,30 @@ def finish_game(score: Score):
     quiz.update_leaderboard(score.score)
     earned_eth = (score.score / len(game.QUIZ_QUESTIONS)) * quiz.reward_eth
     
-    leaderboard = db.get('leaderboard', [])
-    if not leaderboard:
-        db['leaderboard'] = []
+    try:
+        leaderboard = list(db.get('leaderboard', []))
+        
+        # Update existing score or add new entry
+        entry_exists = False
+        for entry in leaderboard:
+            if entry['wallet'] == score.wallet:
+                entry['score'] = max(entry['score'], score.score)
+                entry_exists = True
+                break
+                
+        if not entry_exists:
+            leaderboard.append({
+                'wallet': score.wallet,
+                'score': score.score
+            })
+            
+        # Sort and keep top 10
+        leaderboard.sort(key=lambda x: x['score'], reverse=True)
+        leaderboard = leaderboard[:10]
+        db['leaderboard'] = leaderboard
+    except Exception as e:
+        print(f"Error handling leaderboard: {e}")
         leaderboard = []
-    
-    leaderboard = list(leaderboard)
-    leaderboard.append({
-        'wallet': score.wallet,
-        'score': score.score
-    })
-    leaderboard.sort(key=lambda x: x['score'], reverse=True)
-    leaderboard = leaderboard[:10]  # Keep top 10 scores
-    db['leaderboard'] = leaderboard
     
     return {
         "earned_eth": earned_eth,
