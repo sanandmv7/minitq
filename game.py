@@ -3,6 +3,14 @@ import random
 import time
 from utils import clear_screen, format_eth
 
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel, Field
+from cdp import *
+
+class TransferInput(BaseModel):
+    recipient_address: str = Field(...,         description="The recipient wallet address")
+    amount: str = Field(..., description="The amount to transfer")
+
 class NumberGuessingGame:
     def __init__(self):
         self.min_number = 0
@@ -13,6 +21,24 @@ class NumberGuessingGame:
         self.games_won = 0
         self.games_played = 0
 
+    def initialize_agent():
+        llm = ChatOpenAI(model="gpt-4o-mini")
+
+    def transfer_usdc(wallet: Wallet, recipient_address: str, amount: str) -> str:
+        """Transfer USDC to specified address."""
+        try:
+            # Request USDC from faucet before transfer
+            faucet_tx = wallet.faucet(asset_id="usdc")
+            faucet_tx.wait()
+            print("Received USDC from faucet")
+
+            # Perform the transfer
+            transfer = wallet.transfer(float(amount), "usdc", recipient_address)
+            result = transfer.wait()
+            return f"Successfully transferred {amount} USDC to {recipient_address}"
+        except Exception as e:
+            return f"Failed to transfer USDC: {str(e)}"
+    
     def generate_number(self):
         return random.randint(self.min_number, self.max_number)
 
@@ -78,6 +104,15 @@ class NumberGuessingGame:
             print("Please enter 'y' for yes or 'n' for no.")
 
 def main():
+    agent_executor = initialize_agent()
+    config = {
+        "configurable": {
+            "thread_id": "CDP Agentkit Chatbot Example!",
+            "checkpoint_ns": "default_namespace",
+            "checkpoint_id": "default_checkpoint"
+        }
+    }
+    
     game = NumberGuessingGame()
     while game.play_round():
         pass
