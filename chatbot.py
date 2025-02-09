@@ -13,7 +13,7 @@ from cdp_langchain.agent_toolkits import CdpToolkit
 from cdp_langchain.utils import CdpAgentkitWrapper
 from cdp_langchain.tools import CdpTool
 from pydantic import BaseModel, Field
-from cdp_sdk import Wallet, Transaction
+from cdp import *
 
 wallet_data_file = "wallet_data.txt"
 
