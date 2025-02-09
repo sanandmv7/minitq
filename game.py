@@ -6,11 +6,9 @@ import os
 from utils import clear_screen, format_eth
 from replit import db
 from typing import Dict, List
-from cdp import Cdp
-
+from cdp_sdk import Cdp
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-from cdp_sdk import Cdp
 
 class TransferInput(BaseModel):
     recipient_address: str = Field(..., description="The recipient wallet address")
