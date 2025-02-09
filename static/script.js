@@ -72,7 +72,7 @@ async function finishQuiz() {
         `You earned Ξ${result.earned_eth.toFixed(3)} ETH!`;
         
     const leaderboardHtml = result.leaderboard.map((entry, index) => 
-        `<p>${index + 1}. Wallet: ${entry.wallet.slice(0, 8)}... - Score: ${entry.score}</p>`
+        `<p>${index + 1}. Wallet: ${entry.wallet?.slice(0, 8) || 'Unknown'}... - Score: ${entry.score}</p>`
     ).join('');
     
     document.getElementById('leaderboard-entries').innerHTML = leaderboardHtml;
