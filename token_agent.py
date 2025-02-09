@@ -12,6 +12,9 @@ class TokenAgent:
         
     def mint_tokens(self, player_address: str, amount: int) -> Tuple[bool, str]:
         try:
+            # Convert amount to wei (multiply by 10^18)
+            amount_in_wei = amount * 10**18
+            
             # ABI for the mint function
             mint_abi = [
                 {
@@ -30,10 +33,10 @@ class TokenAgent:
             tx = self.wallet.invoke_contract(
                 contract_address=self.contract_address,
                 method="mint",
-                args={"to": player_address, "amount": amount},
+                args={"to": player_address, "amount": amount_in_wei},
                 abi=mint_abi
             ).wait()
             
-            return True, f"Successfully minted {amount} MINITQ tokens to {player_address}"
+            return True, f"Successfully minted {amount} MINITQ tokens ({amount_in_wei} wei) to {player_address}"
         except Exception as e:
             return False, f"Failed to mint tokens: {str(e)}"
