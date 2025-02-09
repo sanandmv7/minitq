@@ -10,7 +10,7 @@ from cdp import Cdp
 
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-from cdp import *
+from cdp_sdk import Cdp
 
 class TransferInput(BaseModel):
     recipient_address: str = Field(..., description="The recipient wallet address")
