@@ -43,22 +43,24 @@ def finish_game(score: Score):
     quiz.update_leaderboard(score.score)
     earned_eth = (score.score / len(game.QUIZ_QUESTIONS)) * quiz.reward_eth
     
-    try:
-        leaderboard = list(db.get('leaderboard', []))
-        if not isinstance(leaderboard, list):
-            leaderboard = []
-        leaderboard.sort(key=lambda x: x['score'], reverse=True)
-        
-        return {
-            "earned_eth": earned_eth,
-            "leaderboard": leaderboard[:10]  # Return top 10 scores
-        }
-    except Exception as e:
-        print(f"Error processing leaderboard: {e}")
-        return {
-            "earned_eth": earned_eth,
-            "leaderboard": []
-        }
+    leaderboard = db.get('leaderboard', [])
+    if not leaderboard:
+        db['leaderboard'] = []
+        leaderboard = []
+    
+    leaderboard = list(leaderboard)
+    leaderboard.append({
+        'wallet': score.wallet,
+        'score': score.score
+    })
+    leaderboard.sort(key=lambda x: x['score'], reverse=True)
+    leaderboard = leaderboard[:10]  # Keep top 10 scores
+    db['leaderboard'] = leaderboard
+    
+    return {
+        "earned_eth": earned_eth,
+        "leaderboard": leaderboard
+    }
 
 if __name__ == "__main__":
     import uvicorn
