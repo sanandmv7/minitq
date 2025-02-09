@@ -72,11 +72,25 @@ async function finishQuiz() {
 
     const leaderboardDiv = document.getElementById('leaderboard-entries');
     if (result.leaderboard && Array.isArray(result.leaderboard) && result.leaderboard.length > 0) {
-        const leaderboardHtml = result.leaderboard
-            .map((entry, index) => 
-                `<p>${index + 1}. Wallet: ${entry.wallet.slice(0, 8)}... - Score: ${entry.score}</p>`
-            )
-            .join('');
+        const leaderboardHtml = `
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Wallet</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${result.leaderboard.map((entry, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${entry.wallet.slice(0, 8)}...</td>
+                            <td>${entry.score}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>`;
         leaderboardDiv.innerHTML = leaderboardHtml;
     } else {
         leaderboardDiv.innerHTML = 'No entries in leaderboard yet';
