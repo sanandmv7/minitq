@@ -73,7 +73,7 @@ class QuizGame:
         if 'leaderboard' not in db:
             db['leaderboard'] = []
             
-        leaderboard = db['leaderboard']
+        leaderboard = list(db['leaderboard'])
         
         # Update existing score or add new entry
         entry_found = False
