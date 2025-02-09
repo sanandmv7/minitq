@@ -15,6 +15,9 @@ langgraph = "^0.2.45"
 pydantic = "^2.9.2"
 cdp-sdk = "^0.10.0"
 pandas = "^2.2.3"
+replit = "^4.1.0"
+cdp = "^0.0.2"
+langgraph-checkpoint = "^2.0.12"
 
 [build-system]
 requires = ["poetry-core"]
